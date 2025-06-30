@@ -28,6 +28,30 @@ def login():
         print("No users found.")
         return None
     
+def add_expense(username):
+    date = input("Enter date(YYYY-MM-DD): ").strip()
+    category = input("Enter category (e.g. Food, Transport): ").strip()
+    amount = input("Enter amount: ").strip()
+    location = input("Enter location/place of expense: ").strip()
+    try:
+        expense_date = datetime.strptime(date, "%Y-%m-%d")
+        today = datetime.today()
+
+        if expense_date > today:
+            print("❌ Future dates are not allowed.")
+            return
+        
+        amount = float(amount)
+    except ValueError:
+        print("Invalid date or amount format.")
+        return
+
+    with open("data.csv", mode="a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow([username,date, category, amount, location])
+        print("Expense added successfully!")
+
+
 
 def main():
     print("Welcome to Expenses Tracker")
@@ -56,7 +80,7 @@ def main():
         action = input("Choose an option : ").strip()
 
         if action == "1":
-           print(" add_expense(username)")
+           add_expense(username)
         elif action == "2":
            print(" view_expenses(username)")
         elif action == "3":
