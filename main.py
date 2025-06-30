@@ -51,8 +51,24 @@ def add_expense(username):
         writer.writerow([username,date, category, amount, location])
         print("Expense added successfully!")
 
+def view_expenses(username):
+    try:
+        df = pd.read_csv("data.csv", names=["Username","Date", "Category", "Amount","Location"])
+        user_df = df[df["Username"]== username]
+        #df["Amount"] = pd.to_numeric(df["Amount"], errors="coerce")
+        
+        if user_df.empty:
+            print("NO expenses found.")
+            return    
+        #summary = df.groupby(["Date", "Category", "location"])["Amount"].sum().reset_index()
+    
+        print("\n Your Expenses:")
+        for _, row in user_df.iterrows():
+                print(f"{row['Date']} | {row['Category']} |{row['Amount']} |{row['Location']}")
+    except FileNotFoundError:
+        print("No expense found.")
 
-
+        
 def main():
     print("Welcome to Expenses Tracker")
     print("1.Sign Up")
@@ -82,7 +98,7 @@ def main():
         if action == "1":
            add_expense(username)
         elif action == "2":
-           print(" view_expenses(username)")
+           view_expenses(username)
         elif action == "3":
             print("Logged out.")
             break
