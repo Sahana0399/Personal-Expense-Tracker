@@ -8,8 +8,8 @@ def connect():
     cursor.execute('''
                    CREATE TABLE IF NOT EXISTS users(
                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                       username TEXT UNIQUE NOT NULL,
-                       password TEXT NOT NULL
+                       username TEXT UNIQUE,
+                       password TEXT
                     )
                    
      ''')
@@ -17,17 +17,24 @@ def connect():
     conn.close()
     
 def insert_user(username, password):
-    conn = sqlite3.connect('expenses_tracker.db')
-    cursor = conn.cursor()
+   try:
+      conn = sqlite3.connect('expenses_tracker.db')
+      cursor = conn.cursor()
 
-    # Insert user data
-    cursor.execute('''
-    INSERT INTO users (username, password)
-    VALUES (?, ?)
-    ''', (username, password))
+      # Insert user data
+      cursor.execute('''
+      INSERT INTO users (username, password)
+      VALUES (?, ?)
+      ''', (username, password))
 
-    conn.commit()  # Save the changes
-    conn.close()
+      conn.commit()  # Save the changes
+      return True
+   except sqlite3.IntegrityError:
+       return False
+   finally:
+       conn.close()
+       
+
     
 def insert_expense(username, date, category, amount, location):
     conn = sqlite3.connect("expenses_tracker.db")
@@ -70,6 +77,7 @@ def fetch_expense(username):
                    SELECT date, category,amount, location
                    FROM expense
                    WHERE username = ?
+                   ORDER BY date DESC
                    ''',( username,))
     
     expenses = cursor.fetchall()
